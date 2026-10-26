@@ -1,0 +1,10 @@
+import { readFile } from 'node:fs/promises';
+import { root, run, wrangler } from './cli.mjs';
+import path from 'node:path';
+const config = JSON.parse(await readFile(path.join(root, 'cloudflare.local.json'), 'utf8').catch(() => { throw new Error('First follow docs/hosting.md and run npm run setup:cloud.'); }));
+if (!config.d1_databases?.[0]?.database_id || config.d1_databases[0].database_id.startsWith('00000000-')) throw new Error('Configure your real D1 database before deploying.');
+await run(['scripts/check.mjs']);
+await run(['scripts/build.mjs']);
+await wrangler(['d1', 'migrations', 'apply', 'theglowhub-catalog', '--remote', '--config', 'cloudflare.local.json']);
+await wrangler(['deploy', '--config', 'cloudflare.local.json']);
+console.log('For a first deployment, run npm run admin:password -- --remote to enable admin sign-in.');

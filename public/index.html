@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A considered collection of objects for everyday living.">
+  <meta name="theme-color" content="#f7f5ef"><title>Aurel — Objects to live with</title>
+  <link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/shop.js"></script>
+</head>
+<body class="storefront">
+  <a class="skip-link" href="#collection">Skip to collection</a>
+  <div class="announcement" id="announcement">A considered collection for the everyday</div>
+  <header class="shop-header">
+    <a href="/" class="wordmark" aria-label="Shop home"><img src="/assets/mark.svg" width="27" height="27" alt=""><span data-brand>Aurel</span></a>
+    <nav aria-label="Main navigation"><a href="#collection">The collection</a><a href="#about">Our approach</a></nav>
+    <div class="header-actions"><button class="icon-button" id="search-toggle" aria-label="Search products"><span data-icon="search"></span></button><button class="bag-button" id="open-bag" aria-label="Open shopping bag"><span data-icon="bag"></span><span>Bag</span><span id="bag-count">0</span></button></div>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><div class="hero-copy-inner"><h1 id="hero-title">Objects to<br>live with.</h1><p id="intro">Considered pieces for everyday rituals. Explore a collection of warm textures, quiet forms, and things worth keeping.</p><a class="button button-dark" href="#collection">Explore the collection</a></div><span class="hero-footnote">Thoughtfully chosen. Naturally at home.</span></div>
+      <div class="hero-image"><img src="/assets/hero.png" alt="Sunlit ceramic vase, amber candle, walnut bowl, and soft linen on a travertine console" fetchpriority="high"><span class="image-caption">The art of everyday living</span></div>
+    </section>
+    <section id="collection" class="collection section-wrap" aria-labelledby="collection-title">
+      <div class="section-title-row"><div><h2 id="collection-title">The collection</h2><p>Good things, chosen with care.</p></div><span id="product-count" class="muted"></span></div>
+      <div class="collection-toolbar"><div id="categories" class="category-tabs" role="group" aria-label="Filter by category"></div><label class="sort-control"><span class="sr-only">Sort products</span><select id="sort"><option value="featured">Featured</option><option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
+      <div class="shop-search" id="shop-search" hidden><span data-icon="search"></span><input type="search" id="product-search" placeholder="Find something for your home" aria-label="Search products"><button class="text-button" id="clear-search">Clear</button></div>
+      <div id="product-grid" class="product-grid" aria-live="polite"><p class="loading-state">Opening the collection…</p></div>
+    </section>
+    <section class="approach section-wrap" id="about"><div class="approach-title"><span class="small-mark" aria-hidden="true">✳</span><h2>A little less.<br><em>A little better.</em></h2></div><div class="approach-copy"><p id="about-copy">Aurel brings together simple forms and tactile materials for a home that feels like you. Fewer things, chosen well.</p><a href="#collection" class="underlined-link">Find your everyday favourite</a></div></section>
+  </main>
+  <footer class="shop-footer section-wrap"><a class="wordmark" href="/" data-brand>Aurel</a><span>Space for the things that matter.</span><a href="/admin" class="admin-link">Manage shop</a><small>© <span id="year"></span> <span data-brand>Aurel</span></small></footer>
+  <dialog id="product-dialog" class="product-dialog" aria-label="Product details"><button class="icon-button dialog-close" id="close-product" aria-label="Close product details"><span data-icon="close"></span></button><div id="product-detail"></div></dialog>
+  <dialog id="bag-dialog" class="drawer bag-drawer" aria-labelledby="bag-title"><div class="drawer-heading"><h2 id="bag-title">Your bag <span id="bag-title-count"></span></h2><button class="icon-button" id="close-bag" aria-label="Close shopping bag"><span data-icon="close"></span></button></div><div id="bag-content" class="bag-content"></div><div id="bag-summary" class="bag-summary"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

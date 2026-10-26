@@ -1,0 +1,18 @@
+Aurel sample imagery
+Generated with the built-in image-generation tool. These are fictional sample product images, not photographs of verified merchandise.
+All five selected PNGs are bundled locally in public/assets. No external image service is called by the website.
+
+public/assets/hero.png
+Wide landscape editorial photograph for a luxury homewares store. A quiet architectural still life, warm cream plaster wall, travertine console, a large sculptural ivory ceramic vase with two long olive branches, a low amber glass candle, a folded oatmeal linen throw and a shallow dark walnut bowl. Earthy Mediterranean apartment, strong oblique natural sunlight casting beautiful long shadows. Beautiful high-end analog film photography, tactile real material textures, understated. Objects arranged across middle and right, no text or logos, no people. 3:2 landscape.
+
+public/assets/vase.png
+A single elegant sculptural ivory ceramic vase with organic asymmetric rounded body and narrow neck, no branches, on warm light beige plaster background and surface. Luxury homewares catalog product photography. Entire object visible, centered, fills 65% of frame, soft afternoon sunlight from left, subtle natural shadow, high detail chalky ceramic texture, muted warm neutral palette. No text, no logo, no other objects. Square.
+
+public/assets/candle.png
+A single short wide translucent deep amber brown glass candle vessel with off-white wax and one unlit wick, a small plain warm ivory paper label with no text, dark bronze flat lid resting beside it, on warm light beige plaster surface and background. Luxury homewares catalog product photography. Entire candle centered fills 60% of frame, soft afternoon sunlight from left, beautiful glass reflections, tactile, understated, no text no logo. Square.
+
+public/assets/bowl.png
+A single broad shallow sculptural solid walnut wood bowl with gently rounded rim and visible rich dark wood grain, on warm light beige plaster background and surface. Luxury homewares catalog product photography, slightly elevated front perspective showing inside bowl, whole object visible centered fills 70% of frame, natural sunlight from left, elegant gentle shadow, tactile. No food, no text no logo no other objects. Square.
+
+public/assets/throw.png
+A single oatmeal beige linen throw neatly folded twice with subtly fringed edge, stacked on warm light beige plaster surface and background. Luxury homewares catalog product photography. Elevated front perspective, entire textile visible centered fills 70% of frame, warm sunlight from left, detailed softly rumpled linen weave, gentle natural shadow. No text no logo no other objects. Square.

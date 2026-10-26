@@ -1,0 +1,27 @@
+{
+  "name": "theglowhub-shop",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A boutique storefront with a protected Cloudflare admin, D1 catalog and R2 uploads.",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "dev:cloud": "node scripts/dev-cloud.mjs",
+    "test:cloud": "node --test tests/cloud.test.mjs",
+    "deploy:check": "npm run build && wrangler deploy --dry-run",
+    "setup:cloud": "node scripts/setup-cloud.mjs",
+    "admin:password": "node scripts/admin-password.mjs",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "miniflare": "5.20261023.0-beta",
+    "wrangler": "4.153.0"
+  }
+}

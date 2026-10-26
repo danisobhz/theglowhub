@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f7f5ef"><title>Aurel — Shop manager</title><link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css"><script type="module" src="/admin.js"></script></head>
+<body class="admin-body">
+  <a class="skip-link" href="#admin-main">Skip to products</a>
+  <aside class="admin-sidebar">
+    <a href="/admin" class="wordmark"><img src="/assets/mark.svg" width="25" height="25" alt=""><span id="sidebar-brand">Aurel</span></a><span class="manager-label">SHOP MANAGER</span>
+    <nav aria-label="Shop management"><button class="sidebar-link active" id="nav-products" aria-current="page"><span data-icon="grid"></span>Products<span class="sidebar-count" id="sidebar-count">0</span></button><button class="sidebar-link" id="nav-settings"><span data-icon="settings"></span>Shop settings</button></nav>
+    <div class="sidebar-bottom"><a href="/" target="_blank" class="view-shop">View your shop <span data-icon="external"></span></a><div class="local-status"><span></span><span id="workspace-status">Shop manager</span></div><p id="workspace-note">Loading your workspace…</p></div>
+  </aside>
+  <main class="admin-main" id="admin-main">
+    <header class="admin-topbar"><span id="breadcrumb">Your shop <span>/</span> Products</span><a href="/" target="_blank">Preview shop <span data-icon="external"></span></a><button id="sign-out" class="text-button" hidden>Sign out</button></header>
+    <div class="admin-content">
+      <div id="load-error" class="form-error" role="alert" hidden></div>
+      <section id="products-panel">
+        <div class="admin-page-heading"><div><h1>Products</h1><p>Make it yours. Add, edit, and manage your collection.</p></div><button class="button button-dark" id="add-product"><span data-icon="plus"></span>Add product</button></div>
+        <div class="admin-stats" id="admin-stats"><span>Loading your collection…</span></div>
+        <div class="admin-table-toolbar"><div class="admin-filter-tabs" role="group" aria-label="Filter product visibility"><button data-filter="all" class="active" aria-pressed="true">All products</button><button data-filter="active" aria-pressed="false">Visible</button><button data-filter="draft" aria-pressed="false">Hidden</button></div><label class="admin-search"><span data-icon="search"></span><input type="search" id="admin-search" placeholder="Search products" aria-label="Search products"></label></div>
+        <div class="product-table-wrap"><table class="product-table"><thead><tr><th scope="col">Product</th><th scope="col">Visibility</th><th scope="col">Stock</th><th scope="col">Price</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody id="product-rows"></tbody></table><div id="admin-empty" class="empty-state" hidden></div></div>
+        <div class="table-footer"><span id="table-count"></span><span>Click a product to make changes.</span></div>
+        <div class="help-note"><span data-icon="leaf"></span><p>Your collection, your pace. Hidden products stay here until you’re ready to show them.</p></div>
+      </section>
+      <section id="settings-panel" hidden>
+        <div class="admin-page-heading"><div><h1>Shop settings</h1><p>The little details that make this shop yours.</p></div></div>
+        <div class="backup-row"><div><strong>Keep a copy of your catalog</strong><p>Includes products and settings. Download photo files separately.</p></div><button type="button" id="export-catalog" class="button button-outline">Download catalog</button></div><form id="settings-form" class="settings-form">
+          <fieldset><legend>Your brand</legend><p class="field-intro">These details appear on your storefront.</p><div class="field-row"><label>Shop name<input name="name" required maxlength="40" placeholder="Your shop name"></label><label>Currency<select name="currency"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="LBP">LBP — Lebanese Pound</option><option value="AED">AED — UAE Dirham</option></select></label></div><p class="field-hint">Changing currency changes the price labels. It does not convert your product prices.</p></fieldset>
+          <fieldset><legend>Your homepage</legend><label>Announcement<input name="announcement" maxlength="150" placeholder="A short message at the top of your shop"><span class="field-hint">Optional. Leave blank to hide the announcement bar.</span></label><label>Main headline<input name="tagline" required maxlength="100"></label><label>Introduction<textarea name="description" required maxlength="500" rows="3"></textarea></label><label>About your shop<textarea name="about" maxlength="1000" rows="4"></textarea></label></fieldset>
+          <p class="form-error" id="settings-error" role="alert" hidden></p><div class="settings-actions"><button class="button button-dark" type="submit" id="save-settings">Save changes</button><span id="settings-save-status" class="muted" role="status">Changes appear in your shop after saving.</span></div>
+        </form>
+      </section>
+    </div>
+  </main>
+  <dialog id="editor" class="drawer editor-drawer" aria-labelledby="editor-title" data-dismiss="false">
+    <form id="product-form">
+      <div class="drawer-heading"><div><span class="editor-subtitle" id="editor-subtitle">Your collection</span><h2 id="editor-title">Add product</h2></div><button type="button" class="icon-button" id="close-editor" aria-label="Close product editor"><span data-icon="close"></span></button></div>
+      <div class="editor-body">
+        <fieldset><legend>Product image</legend><div class="image-editor"><div id="image-preview" class="image-preview"></div><div class="image-controls"><label for="image-upload" class="button button-outline upload-label"><span data-icon="upload"></span><span id="upload-label">Upload image</span></label><input id="image-upload" class="file-input" type="file" accept="image/png,image/jpeg,image/webp"><p>JPG, PNG, or WebP<br>Up to 5 MB</p><button class="text-button danger" type="button" id="remove-image" hidden>Remove image</button></div></div></fieldset>
+        <fieldset><legend>Product details</legend><label>Product name<input name="name" required maxlength="100" placeholder="e.g. Form ceramic vase"></label><div class="field-row"><label><span>Price <span id="price-currency" class="label-note">USD</span></span><input name="price" required type="number" min="0" max="999999" step="0.01" inputmode="decimal" placeholder="0.00"></label><label>Stock quantity<input name="stock" required type="number" min="0" max="999999" step="1" inputmode="numeric" placeholder="0"></label></div><label>Category<input name="category" list="category-options" required maxlength="50" placeholder="Choose or type a category"><datalist id="category-options"></datalist><span class="field-hint">Products in the same category are grouped together in your shop.</span></label><label>Description<textarea name="description" maxlength="3000" rows="4" placeholder="Tell customers what makes this product special."></textarea></label><label><span>Details &amp; care <span class="label-note">Optional</span></span><textarea name="details" maxlength="1500" rows="3" placeholder="Materials, dimensions, and care instructions."></textarea></label></fieldset>
+        <fieldset><legend>In your shop</legend><label>Visibility<select name="status"><option value="active">Visible — show in the shop</option><option value="draft">Hidden — only you can see it here</option></select></label><label class="checkbox-label"><input name="featured" type="checkbox"><span>Make this a house favourite<small>Appears first when customers browse featured products.</small></span></label></fieldset>
+        <p class="form-error" id="product-error" role="alert" hidden></p><button type="button" class="text-button danger delete-product" id="delete-product" hidden>Delete product</button>
+      </div>
+      <div class="editor-footer"><button type="button" class="button button-outline" id="cancel-editor">Cancel</button><button type="submit" class="button button-dark" id="save-product">Save product</button></div>
+    </form>
+  </dialog>
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description" data-dismiss="false"><h2 id="confirm-title"></h2><p id="confirm-description"></p><div class="confirm-actions"><button class="button button-outline" id="confirm-no">Keep editing</button><button class="button button-danger" id="confirm-yes">Discard changes</button></div></dialog>
+  <dialog id="reauth-dialog" class="confirm-dialog" aria-labelledby="reauth-title" data-dismiss="false"><h2 id="reauth-title">Sign in again</h2><p>Your session ended. Your unsaved edits are still here.</p><form id="reauth-form"><label for="reauth-password">Admin password</label><input id="reauth-password" type="password" required autocomplete="current-password" maxlength="256"><p id="reauth-error" class="form-error" role="alert" hidden></p><button type="submit" id="reauth-submit" class="button button-dark">Sign in</button></form></dialog>  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
