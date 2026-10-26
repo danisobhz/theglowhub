@@ -16,7 +16,7 @@ test('Cloud shop: authentication, durable storage and safe catalog editing', { t
     compatibilityFlags: ['nodejs_compat'], cf: false, port: 0,
     bindings: { ADMIN_PASSWORD_HASH: hash },
     d1Databases: ['DB'], r2Buckets: ['IMAGES'],
-    d1Persist: path.join(directory, 'd1'), r2Persist: path.join(directory, 'r2'),
+    resourcePersistencePath: directory,
     serviceBindings: { ASSETS: async request => {
       const route = new URL(request.url).pathname;
       if (!['/index.html', '/admin.html', '/login.html', '/assets/vase.png'].includes(route)) return new Response('Not found', { status: 404 });
@@ -96,7 +96,8 @@ test('Cloud shop: authentication, durable storage and safe catalog editing', { t
     });
     await t.test('catalog, images and sessions survive a runtime restart', async () => {
       await mf.dispose(); mf = new Miniflare(options(digest(password))); db = await mf.getD1Database('DB');
-      assert.equal((await (await request('/api/admin')).json()).settings.name, 'Cloud test shop');
+      const response = await request('/api/admin'); assert.equal(response.status, 200);
+      assert.equal((await response.json()).settings.name, 'Cloud test shop');
       assert.equal((await request(uploaded)).status, 200);
       assert.equal((await request(`/api/products/${product.id}`, 'DELETE', { version: product.version })).status, 200);
       assert.equal((await request(uploaded)).status, 200);
