@@ -9,9 +9,11 @@ export default async function handler(request, context) {
   // Only the production deployment shares the real shop's image store.
   const environment = context.deploy.context;
   const storeName = environment === 'production' ? 'shop-images' : `shop-images-${context.deploy.id || 'local'}`;
+  let pool;
   try {
+    pool = getDatabase().pool;
     return await shop.fetch(request, {
-      DB: createDatabase(getDatabase().pool),
+      DB: createDatabase(pool),
       IMAGES: createImages(getStore({ name: storeName, consistency: 'strong' })),
       ASSETS: createAssets(),
       ADMIN_PASSWORD_HASH: Netlify.env.get('ADMIN_PASSWORD_HASH'),
@@ -24,7 +26,7 @@ export default async function handler(request, context) {
     return Response.json({ error: 'The shop is being prepared. Please try again shortly.' }, {
       status: 503, headers: { 'Cache-Control': 'no-store' }
     });
-  }
+  } finally { if (pool) await pool.end(); }
 }
 
 export const config = {

@@ -4,7 +4,9 @@ import { createDatabase } from '../lib/database.mjs';
 
 export default async function cleanup(_request, context) {
   if (context.deploy.context !== 'production') return new Response(null, { status: 204 });
-  await shop.scheduled(null, { DB: createDatabase(getDatabase().pool) });
+  const pool = getDatabase().pool;
+  try { await shop.scheduled(null, { DB: createDatabase(pool) }); }
+  finally { await pool.end(); }
   return new Response(null, { status: 204 });
 }
 
