@@ -22,6 +22,7 @@
       </section>
       <section id="settings-panel" hidden>
         <div class="admin-page-heading"><div><h1>Shop settings</h1><p>The little details that make this shop yours.</p></div></div>
+        <div class="backup-row" id="password-settings" hidden><div><strong>Your password</strong><p>Choose the password you use to manage your shop.</p></div><button type="button" id="change-password" class="button button-outline">Change password</button></div>
         <div class="backup-row"><div><strong>Keep a copy of your catalog</strong><p>Includes products and settings. Download photo files separately.</p></div><button type="button" id="export-catalog" class="button button-outline">Download catalog</button></div><form id="settings-form" class="settings-form">
           <fieldset><legend>Your brand</legend><p class="field-intro">These details appear on your storefront.</p><div class="field-row"><label>Shop name<input name="name" required maxlength="40" placeholder="Your shop name"></label><label>Currency<select name="currency"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="LBP">LBP — Lebanese Pound</option><option value="AED">AED — UAE Dirham</option></select></label></div><p class="field-hint">Changing currency changes the price labels. It does not convert your product prices.</p></fieldset>
           <fieldset><legend>Your homepage</legend><label>Announcement<input name="announcement" maxlength="150" placeholder="A short message at the top of your shop"><span class="field-hint">Optional. Leave blank to hide the announcement bar.</span></label><label>Main headline<input name="tagline" required maxlength="100"></label><label>Introduction<textarea name="description" required maxlength="500" rows="3"></textarea></label><label>About your shop<textarea name="about" maxlength="1000" rows="4"></textarea></label></fieldset>
@@ -40,6 +41,16 @@
         <p class="form-error" id="product-error" role="alert" hidden></p><button type="button" class="text-button danger delete-product" id="delete-product" hidden>Delete product</button>
       </div>
       <div class="editor-footer"><button type="button" class="button button-outline" id="cancel-editor">Cancel</button><button type="submit" class="button button-dark" id="save-product">Save product</button></div>
+    </form>
+  </dialog>
+  <dialog id="password-dialog" class="confirm-dialog" aria-labelledby="password-title" data-dismiss="false">
+    <h2 id="password-title">Your new password</h2><p>Use at least 12 characters. A few memorable words work well. You’ll sign in again after saving.</p>
+    <form id="password-form">
+      <label>Current password<input name="currentPassword" type="password" required autocomplete="current-password" maxlength="256"></label>
+      <label>New password<input name="newPassword" type="password" required autocomplete="new-password" minlength="12" maxlength="256"></label>
+      <label>Confirm new password<input name="confirmPassword" type="password" required autocomplete="new-password" minlength="12" maxlength="256"></label>
+      <p id="password-error" class="form-error" role="alert" hidden></p>
+      <div class="confirm-actions"><button type="button" id="cancel-password" class="button button-outline">Cancel</button><button type="submit" id="save-password" class="button button-dark">Save password</button></div>
     </form>
   </dialog>
   <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description" data-dismiss="false"><h2 id="confirm-title"></h2><p id="confirm-description"></p><div class="confirm-actions"><button class="button button-outline" id="confirm-no">Keep editing</button><button class="button button-danger" id="confirm-yes">Discard changes</button></div></dialog>

@@ -7,6 +7,15 @@ import shop from '../cloud/worker.mjs';
 import { createDatabase, postgresQuery } from '../netlify/lib/database.mjs';
 import { createImages } from '../netlify/lib/images.mjs';
 import { createAssets } from '../netlify/lib/assets.mjs';
+import { createCredentials, encodePassword, verifyPassword } from '../netlify/lib/credentials.mjs';
+
+test('human passwords use salted scrypt and reject incorrect passwords', async () => {
+  const encoded = await encodePassword('A long personal passphrase');
+  assert.match(encoded, /^scrypt-v1:/);
+  assert.equal(await verifyPassword('A long personal passphrase', encoded), true);
+  assert.equal(await verifyPassword('Wrong personal passphrase', encoded), false);
+  assert.equal(await verifyPassword('anything', 'invalid'), false);
+});
 
 test('Postgres parameter conversion preserves quoted SQL and separates all values', () => {
   assert.deepEqual(postgresQuery("SELECT '?' AS text WHERE id = ? AND value = ?", ['id', "a'; DROP TABLE products; --"]), {
@@ -107,6 +116,47 @@ test('Netlify shop uses real Postgres for sessions, catalog and concurrent edits
       assert.equal((await pool.query('SELECT * FROM sessions')).rowCount,0);
       assert.equal((await request('/api/admin','GET',undefined,{}, {ADMIN_PASSWORD_HASH:''})).status,503);
       assert.equal((await request('/api/store','GET',undefined,{}, {ADMIN_PASSWORD_HASH:''})).status,200);
+    });
+    await t.test('owner can choose a password, invalidate old sessions and retire legacy deployments', async () => {
+      env.CREDENTIALS = createCredentials(pool, env.ADMIN_PASSWORD_HASH);
+      assert.equal((await (await request('/api/auth/session')).json()).canChangePassword, true);
+      cookie = '';
+      const newPassword = 'My own memorable phrase 123';
+      const payload = {currentPassword:password,newPassword};
+      assert.equal((await request('/api/auth/password','POST',payload)).status,401);
+      cookie = (await request('/api/auth/login','POST',{password})).headers.get('set-cookie').split(';')[0];
+      const oldCookie = cookie;
+      assert.equal((await request('/api/auth/password','POST',payload,{Origin:'https://evil.example'})).status,403);
+      assert.equal((await request('/api/auth/password','POST',{...payload,newPassword:'short'})).status,400);
+      assert.equal((await request('/api/auth/password','POST',{...payload,currentPassword:'incorrect'})).status,400);
+      assert.equal((await request('/api/admin')).status,200);
+      const changed = await request('/api/auth/password','POST',payload);
+      assert.equal(changed.status,200);
+      assert.match(changed.headers.get('set-cookie'), /Max-Age=0/);
+      assert.equal((await request('/api/admin')).status,401);
+      assert.equal((await request('/api/auth/login','POST',{password})).status,401);
+      const stored = (await pool.query('SELECT * FROM owner_credentials')).rows[0];
+      assert.match(stored.password_hash, /^scrypt-v1:/);
+      assert.notEqual(stored.password_hash, newPassword);
+      // A fresh invocation must retain the chosen password even without bootstrap configuration.
+      env.CREDENTIALS = createCredentials(pool, '');
+      cookie = (await request('/api/auth/login','POST',{password:newPassword})).headers.get('set-cookie').split(';')[0];
+      assert.equal((await request('/api/admin')).status,200);
+      assert.equal((await request('/api/admin','GET',undefined,{Cookie:oldCookie})).status,401);
+      // Simulate an old immutable function. Its transaction cannot recreate a bootstrap session,
+      // and its attempt to delete current sessions rolls back too.
+      assert.equal((await request('/api/auth/login','POST',{password},{},{CREDENTIALS:undefined})).status,500);
+      assert.equal((await request('/api/admin')).status,200);
+      const second = {currentPassword:newPassword,newPassword:'Another personal phrase 456'};
+      const statuses = (await Promise.all([request('/api/auth/password','POST',second),request('/api/auth/password','POST',second)])).map(r=>r.status).sort();
+      assert.equal(statuses[0],200);
+      assert.ok([401,409].includes(statuses[1]));
+      assert.equal((await request('/api/auth/login','POST',{password:newPassword})).status,401);
+      assert.equal((await request('/api/auth/login','POST',{password:second.newPassword})).status,200);
+      // Current-password guesses share the persistent login throttle.
+      cookie = (await request('/api/auth/login','POST',{password:second.newPassword})).headers.get('set-cookie').split(';')[0];
+      for(let i=0;i<5;i++) assert.equal((await request('/api/auth/password','POST',{currentPassword:'wrong',newPassword:'A different phrase 789'})).status,400);
+      assert.equal((await request('/api/auth/password','POST',{currentPassword:second.newPassword,newPassword:'A different phrase 789'})).status,429);
     });
   } finally {
     await pool.end();

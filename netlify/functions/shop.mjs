@@ -4,6 +4,7 @@ import shop from '../../cloud/worker.mjs';
 import { createDatabase } from '../lib/database.mjs';
 import { createImages } from '../lib/images.mjs';
 import { createAssets } from '../lib/assets.mjs';
+import { createCredentials } from '../lib/credentials.mjs';
 
 export default async function handler(request, context) {
   // Only the production deployment shares the real shop's image store.
@@ -17,6 +18,7 @@ export default async function handler(request, context) {
       IMAGES: createImages(getStore({ name: storeName, consistency: 'strong' })),
       ASSETS: createAssets(),
       ADMIN_PASSWORD_HASH: Netlify.env.get('ADMIN_PASSWORD_HASH'),
+      CREDENTIALS: createCredentials(pool, Netlify.env.get('ADMIN_PASSWORD_HASH')),
       CLIENT_IP: context.ip || 'unknown',
       // Base64 and JSON must fit within Netlify Functions' request-size limit.
       UPLOAD_MAX_BYTES: 3 * 1024 * 1024

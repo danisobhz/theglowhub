@@ -126,8 +126,30 @@ $('#sign-out').addEventListener('click',async()=>{
 $('#export-catalog').addEventListener('click',async()=>{
   try{const data=await api('/api/admin/export');const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`shop-catalog-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Catalog downloaded. Photo files are stored separately.');}catch(e){toast(e.message,true);}
 });
+const passwordForm = $('#password-form'), passwordDialog = $('#password-dialog');
+$('#change-password').addEventListener('click',()=>{
+  if(saving)return;
+  if(dirty || settingsDirty)return toast('Save your current changes before changing your password.',true);
+  passwordForm.reset();$('#password-error').hidden=true;openDialog(passwordDialog);passwordForm.elements.currentPassword.focus();
+});
+function cancelPassword(){if(saving)return;passwordForm.reset();closeDialog(passwordDialog);}
+$('#cancel-password').addEventListener('click',cancelPassword);
+passwordDialog.addEventListener('cancel',e=>{e.preventDefault();cancelPassword();});
+passwordForm.addEventListener('submit',async e=>{
+  e.preventDefault();if(saving)return;
+  const data=Object.fromEntries(new FormData(passwordForm));
+  const error=$('#password-error');error.hidden=true;
+  if(data.newPassword!==data.confirmPassword){error.textContent='The new passwords don’t match. Please enter them again.';error.hidden=false;return;}
+  saving=true;const controls=[...passwordForm.querySelectorAll('input,button')];controls.forEach(c=>c.disabled=true);$('#save-password').textContent='Saving…';
+  try{
+    await api('/api/auth/password','POST',{currentPassword:data.currentPassword,newPassword:data.newPassword});
+    passwordForm.reset();saving=false;location.replace('/login?password=changed');
+  }catch(e){error.textContent=e.message;error.hidden=false;}
+  finally{saving=false;controls.forEach(c=>c.disabled=false);$('#save-password').textContent='Save password';}
+});
 try{
   const session=await api('/api/auth/session');
+  $('#password-settings').hidden=!session.canChangePassword;
   uploadMaxBytes=session.uploadMaxBytes || uploadMaxBytes;
   $('#upload-size-limit').textContent=`Up to ${uploadMaxBytes/1024/1024} MB`;
   if(!session.authenticated){location.replace('/login');}else{

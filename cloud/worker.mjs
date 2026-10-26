@@ -1,5 +1,5 @@
 import { fail, readJson, validateProduct, validateSettings, validateVersion, parseImage } from './validation.mjs';
-import { getSession, requireSession, requireSameOrigin, login, hash, tokenFrom, sessionCookie } from './auth.mjs';
+import { getSession, requireSession, requireSameOrigin, login, changePassword, hash, tokenFrom, sessionCookie } from './auth.mjs';
 
 const SECURITY = {
   'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY',
@@ -36,7 +36,11 @@ export default {
       if (url.protocol !== 'https:' && !['localhost','127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`,308);
       if (route === '/api/health' && request.method === 'GET') { await env.DB.prepare('SELECT 1').first(); return json({status:'ok'}); }
       if (route === '/api/auth/login' && request.method === 'POST') { const {token} = await login(request,env); return json({authenticated:true},200,{'Set-Cookie':sessionCookie(request,token)}); }
-      if (route === '/api/auth/session' && request.method === 'GET') return json({authenticated:!!await getSession(request,env),mode:'cloud',uploadMaxBytes:env.UPLOAD_MAX_BYTES || 5*1024*1024});
+      if (route === '/api/auth/session' && request.method === 'GET') return json({authenticated:!!await getSession(request,env),mode:'cloud',canChangePassword:!!env.CREDENTIALS,uploadMaxBytes:env.UPLOAD_MAX_BYTES || 5*1024*1024});
+      if (route === '/api/auth/password' && request.method === 'POST') {
+        await changePassword(request,env);
+        return json({changed:true},200,{'Set-Cookie':sessionCookie(request,'',0)});
+      }
       if (route === '/api/auth/logout' && request.method === 'POST') {
         requireSameOrigin(request); const token = tokenFrom(request);
         if (token) await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(await hash(token)).run();

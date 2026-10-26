@@ -1,4 +1,5 @@
 import { api } from './shared.js';
+if(new URLSearchParams(location.search).get('password')==='changed') document.querySelector('.login-intro p').textContent='Password saved. Sign in with your new password.';
 const form=document.querySelector('#login-form'),password=document.querySelector('#password'),error=document.querySelector('#login-error'),submit=document.querySelector('#login-submit');
 document.querySelector('#toggle-password').addEventListener('click',e=>{const show=password.type==='password';password.type=show?'text':'password';e.currentTarget.textContent=show?'Hide':'Show';e.currentTarget.setAttribute('aria-label',show?'Hide password':'Show password');});
 form.addEventListener('submit',async e=>{

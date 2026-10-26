@@ -31,7 +31,13 @@ The initial migration contains the demonstration Aurel catalog. Local edits in `
 
 Netlify uploads are limited to **3 MB per image** so base64 requests fit the function limit. The admin shows the correct limit for the hosting environment; local and Cloudflare uploads remain 5 MB.
 
-Use **Download catalog** in the admin to back up product details and settings. Photo files require a separate backup. Deleting a product does not delete its image. Rotating `ADMIN_PASSWORD_HASH` and redeploying invalidates previous admin sessions on the new deployment. Retire old deploy URLs if access credentials were compromised.
+Use **Download catalog** in the admin to back up product details and settings. Photo files require a separate backup. Deleting a product does not delete its image.
+
+## Your password
+
+Sign in with the initial setup password, then open **Shop settings → Change password**. Enter your current password, choose at least 12 characters, and confirm it. Saving signs out every session; sign in again with your new password. Save it in your password manager.
+
+Passwords chosen in the dashboard are stored as salted scrypt hashes in the database and survive deployments. The setup password no longer works after a change. A database guard also prevents older deployed functions from creating sessions with retired credentials. Catalog exports never contain passwords. Changing the bootstrap `ADMIN_PASSWORD_HASH` environment variable does not override a password already saved in the database. Recovery requires the Netlify account holder to deliberately reset the owner credential and sessions in the database; do not delete catalog data.
 
 ## Verification
 
