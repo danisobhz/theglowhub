@@ -36,7 +36,7 @@ export default {
       if (url.protocol !== 'https:' && !['localhost','127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`,308);
       if (route === '/api/health' && request.method === 'GET') { await env.DB.prepare('SELECT 1').first(); return json({status:'ok'}); }
       if (route === '/api/auth/login' && request.method === 'POST') { const {token} = await login(request,env); return json({authenticated:true},200,{'Set-Cookie':sessionCookie(request,token)}); }
-      if (route === '/api/auth/session' && request.method === 'GET') return json({authenticated:!!await getSession(request,env),mode:'cloud'});
+      if (route === '/api/auth/session' && request.method === 'GET') return json({authenticated:!!await getSession(request,env),mode:'cloud',uploadMaxBytes:env.UPLOAD_MAX_BYTES || 5*1024*1024});
       if (route === '/api/auth/logout' && request.method === 'POST') {
         requireSameOrigin(request); const token = tokenFrom(request);
         if (token) await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(await hash(token)).run();
@@ -84,7 +84,10 @@ export default {
           return json(productRow(row));
         }
         if(route==='/api/uploads' && request.method==='POST') {
-          const input=await readJson(request,7*1024*1024);const image=parseImage(input.data);const key=`${crypto.randomUUID()}.${image.extension}`;
+          const limit=env.UPLOAD_MAX_BYTES || 5*1024*1024;
+          const input=await readJson(request,Math.ceil(limit*4/3)+1024);const image=parseImage(input.data);
+          if(image.bytes.length>limit)throw fail(`Choose an image under ${limit/1024/1024} MB.`,413);
+          const key=`${crypto.randomUUID()}.${image.extension}`;
           await env.IMAGES.put(key,image.bytes,{httpMetadata:{contentType:image.type}});return json({image:`/uploads/${key}`},201);
         }
         throw fail('This action is not available.',404);

@@ -38,11 +38,11 @@ export async function login(request, env) {
   const { password } = await readJson(request, 2048);
   if (typeof password !== 'string' || password.length > 256) throw fail('Enter your admin password.', 401);
   const now = Date.now(); const expires = now + 15 * 60 * 1000;
-  const address = request.headers.get('cf-connecting-ip') || 'local';
+  const address = env.CLIENT_IP ?? request.headers.get('cf-connecting-ip') ?? 'local';
   const key = await hash(`${env.ADMIN_PASSWORD_HASH}:${address}`);
   const attempt = await env.DB.prepare(`INSERT INTO login_attempts(key, attempts, expires_at) VALUES(?, 1, ?)
-    ON CONFLICT(key) DO UPDATE SET attempts = CASE WHEN expires_at <= ? THEN 1 ELSE attempts + 1 END,
-    expires_at = CASE WHEN expires_at <= ? THEN ? ELSE expires_at END RETURNING attempts`).bind(key, expires, now, now, expires).first();
+    ON CONFLICT(key) DO UPDATE SET attempts = CASE WHEN login_attempts.expires_at <= ? THEN 1 ELSE login_attempts.attempts + 1 END,
+    expires_at = CASE WHEN login_attempts.expires_at <= ? THEN ? ELSE login_attempts.expires_at END RETURNING attempts`).bind(key, expires, now, now, expires).first();
   if (attempt.attempts > 5) throw fail('Too many sign-in attempts. Please wait 15 minutes and try again.', 429);
   const digest = await hash(password);
   if (!timingSafeEqual(encoder.encode(digest), encoder.encode(env.ADMIN_PASSWORD_HASH))) throw fail('That password is not correct. Please try again.', 401);

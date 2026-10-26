@@ -5,6 +5,7 @@ setupDialogs();
 let products = [], settings = {}, filter = 'all', currentId = null, image = '', pendingImage = null, objectUrl = null, dirty = false, settingsDirty = false, saving = false, imageLoading = false, loaded = false;
 const form = $('#product-form'), editor = $('#editor'), settingsForm = $('#settings-form');
 const field = name => form.elements.namedItem(name);
+let uploadMaxBytes = 5 * 1024 * 1024;
 function render() {
   $('#sidebar-brand').textContent = settings.name;
   document.title = `${settings.name} — Shop manager`;
@@ -70,7 +71,7 @@ form.addEventListener('input',()=>dirty=true);
 $('#image-upload').addEventListener('change',async e=>{
   const file=e.target.files[0]; if(!file)return;
   if(!['image/jpeg','image/png','image/webp'].includes(file.type)) { e.target.value=''; return showProductError('Choose a JPG, PNG, or WebP image.'); }
-  if(file.size>5*1024*1024) { e.target.value=''; return showProductError('This image is too large. Choose one under 5 MB.'); }
+  if(file.size>uploadMaxBytes) { e.target.value=''; return showProductError(`This image is too large. Choose one under ${uploadMaxBytes/1024/1024} MB.`); }
   const candidate=URL.createObjectURL(file); const testImage=new Image(); testImage.src=candidate;
   imageLoading=true; $('#save-product').disabled=true; $('#save-product').textContent='Preparing image…';
   try { await testImage.decode(); } catch { URL.revokeObjectURL(candidate); e.target.value=''; return showProductError('This image could not be opened. Try another photo.'); }
@@ -127,6 +128,8 @@ $('#export-catalog').addEventListener('click',async()=>{
 });
 try{
   const session=await api('/api/auth/session');
+  uploadMaxBytes=session.uploadMaxBytes || uploadMaxBytes;
+  $('#upload-size-limit').textContent=`Up to ${uploadMaxBytes/1024/1024} MB`;
   if(!session.authenticated){location.replace('/login');}else{
     const local=session.mode==='local';$('#sign-out').hidden=local;$('#workspace-status').textContent=local?'Local workspace':'Shop manager';$('#workspace-note').textContent=local?'Saved on this computer. Your shop is not online.':'Changes are saved securely to your shop.';await load();
   }

@@ -1,7 +1,7 @@
 import { readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
-const ignored = new Set(['node_modules', '.git', '.wrangler', 'dist', 'data', 'backups', 'previews']);
+const ignored = new Set(['node_modules', '.git', '.wrangler', '.netlify', 'dist', 'data', 'backups', 'previews']);
 async function check(dir) {
   for (const file of await readdir(dir, { withFileTypes: true })) {
     const target = path.join(dir, file.name);

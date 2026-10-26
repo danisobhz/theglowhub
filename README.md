@@ -27,6 +27,8 @@ The storefront supports search, category filters, sorting, product details and a
 
 ## Hosting-ready version
 
+For **Netlify Free**, read [the Netlify guide](docs/netlify.md). It uses the same interface with Netlify Functions, Postgres and persistent image storage. The Netlify build command is `npm run build:netlify`; uploads on that host are limited to 3 MB. Its Free plan pauses service if monthly credits are exhausted.
+
 The Cloudflare Worker in `cloud/` serves the same design with a password-protected admin, D1 catalog storage and R2 photo storage. The local Node server is not used in production. Hosting is a separate, explicit step; pushing this repository does not publish a website.
 
 Read **[the hosting guide](docs/hosting.md)** for setup, local cloud testing, deployment, password resets and backups. The account-specific configuration and secrets are excluded from Git.
