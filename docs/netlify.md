@@ -2,6 +2,8 @@
 
 The storefront and admin can run on Netlify Free. The existing local launcher and Cloudflare option still work. Payments and orders remain disabled.
 
+Current deployment: [theglowhub.netlify.app](https://theglowhub.netlify.app), with the manager at [/admin](https://theglowhub.netlify.app/admin). The project belongs to the `walt-white` team and its ID is `07a142bd-e81e-41ea-a245-f0c88530aee2`. The first deployment preserved the local vase photo and stock of 20.
+
 ## What gets deployed
 
 - Static storefront assets from `dist/`.
