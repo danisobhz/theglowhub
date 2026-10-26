@@ -1,6 +1,6 @@
 # The Glow Hub shop
 
-A boutique storefront and a simple product manager, with a cream, ink and gold design. The included Aurel branding and sample catalog can be replaced from **Shop settings**. All fonts and images are served locally.
+A boutique storefront and a simple product manager, with a cream, ink and gold design. The included Aurel branding and sample catalog can be replaced from **Shop settings**. It uses system fonts and bundled images without remote font services.
 
 ## Try it on your computer
 

@@ -11,7 +11,8 @@ test('Cloud shop: authentication, durable storage and safe catalog editing', { t
   const password = randomBytes(24).toString('base64url');
   const digest = value => createHash('sha256').update(value).digest('hex');
   const options = hash => convertV4MiniflareOptions({
-    modules: true, scriptPath: path.resolve('cloud/worker.mjs'), compatibilityDate: '2026-10-23',
+    modules: ['worker.mjs', 'auth.mjs', 'validation.mjs'].map(file => ({ type: 'ESModule', path: path.resolve('cloud', file) })),
+    modulesRoot: process.cwd(), compatibilityDate: '2026-10-23',
     compatibilityFlags: ['nodejs_compat'], cf: false, port: 0,
     bindings: { ADMIN_PASSWORD_HASH: hash },
     d1Databases: ['DB'], r2Buckets: ['IMAGES'],
